@@ -1,5 +1,4 @@
-// Registro.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
@@ -9,62 +8,38 @@ import Footer from './footer';
 const Registro = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [nombre, setNombre] = useState('');
   const [confirmarPassword, setConfirmarPassword] = useState('');
+  const [nombre, setNombre] = useState('');
   const [aceptoTerminos, setAceptoTerminos] = useState(false);
   const [error, setError] = useState('');
+
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Validar que el checkbox de términos y condiciones esté marcado antes de habilitar el botón de registro
-    const isValid = email && password && nombre && confirmarPassword && aceptoTerminos;
-    setError('');
-    // Puedes agregar más validaciones según tus necesidades
-
-    if (isValid) {
-      // Habilitar el botón de registro
-    } else {
-      // Deshabilitar el botón de registro
-    }
-  }, [email, password, nombre, confirmarPassword, aceptoTerminos]);
 
   const handleRegistro = async () => {
     try {
-      if (password !== confirmarPassword) {
-        setError('Las contraseñas no coinciden.');
-        return;
-      }
-
-      if (!aceptoTerminos) {
-        setError('Debes aceptar los términos y condiciones para registrarte.');
-        return;
-      }
-
-      const response = await axios.post('http://localhost:8081/registro', {
-        email_usuario: email,
-        contraseña_usuario: password,
-        nombre_usuario: nombre,
+      const response = await axios.post('http://localhost:8001/registro', {
+        email,
+        contraseña: password,
+        nombre,
       });
-
-      if (response.data && response.data.Estatus === "OK") {
-        navigate('/login');
-      } else {
-        setError('Hubo un problema al registrar la cuenta. Por favor, verifica tus datos.');
-      }
+      console.log(response.data);
+      // Manejar la respuesta del servidor según tus necesidades
+      navigate('/login'); // Redirige a la página de inicio de sesión después del registro exitoso
     } catch (error) {
-      console.error('Error al realizar la petición:', error);
-      setError('Hubo un problema al procesar la solicitud. Por favor, intenta nuevamente.');
+      console.error('Error al registrar:', error.response.data);
+      setError('Error al registrar. Por favor, inténtalo de nuevo.');
     }
   };
 
   const handleGoogleLogin = (response) => {
     console.log(response);
+    // Lógica para el inicio de sesión con Google
   };
 
   return (
     <>
       <Header />
-      <div className="container"> 
+      <div className="container">
         <h2>Registrarse</h2>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div>
@@ -77,7 +52,11 @@ const Registro = () => {
         </div>
         <div>
           <label>Confirmar contraseña:</label>
-          <input type="password" value={confirmarPassword} onChange={(e) => setConfirmarPassword(e.target.value)} />
+          <input
+            type="password"
+            value={confirmarPassword}
+            onChange={(e) => setConfirmarPassword(e.target.value)}
+          />
         </div>
         <div>
           <label>Nombre:</label>
