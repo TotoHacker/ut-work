@@ -31,9 +31,29 @@ const Registro = () => {
     }
   };
 
-  const handleGoogleLogin = (response) => {
-    console.log(response);
-    // Lógica para el inicio de sesión con Google
+  const responseGoogle = (response) => {
+    if (!response || !response.tokenId) {
+      // El usuario cerró la ventana emergente de Google sin seleccionar una cuenta
+      return;
+    }
+
+    // Procede solo si se obtuvo un tokenId
+    iniciarSesionConGoogle(response.tokenId);
+  };
+
+  const iniciarSesionConGoogle = async (tokenId) => {
+    try {
+      // Aquí puedes manejar la respuesta de Google, por ejemplo, enviándola al servidor
+      const googleResponse = await axios.post('http://localhost:8001/google-login', {
+        tokenId: tokenId,
+      });
+      console.log(googleResponse.data);
+      // Manejar la respuesta del servidor según tus necesidades
+      navigate('/'); // Redirige a la página principal después del inicio de sesión exitoso
+    } catch (error) {
+      console.error('Error al iniciar sesión con Google:', error.response.data);
+      setError('Error al iniciar sesión con Google. Por favor, inténtalo de nuevo.');
+    }
   };
 
   return (
@@ -44,7 +64,7 @@ const Registro = () => {
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div>
           <label>Email:</label>
-          <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="emal" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div>
           <label>Contraseña:</label>
@@ -75,12 +95,14 @@ const Registro = () => {
         </button>
         <p>¿Ya tienes cuenta?</p>
         <a href="/login">Iniciar Sesión</a>
+
+        {/* Botón de inicio de sesión con Google */}
         <GoogleLogin
           clientId="169218531051-cjabvo5a2o1qntlbqil2627dbgq1qu47.apps.googleusercontent.com"
           buttonText="Iniciar Sesión con Google"
-          onSuccess={handleGoogleLogin}
-          onFailure={handleGoogleLogin}
-          cookiePolicy={'single_host_origin'}
+          onSuccess={responseGoogle}
+          onFailure={responseGoogle}
+          cookiePolicy="single_host_origin"
         />
       </div>
       <Footer />
