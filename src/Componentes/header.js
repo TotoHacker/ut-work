@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import UTWorkImage from '../Imagenes/UTWork.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
